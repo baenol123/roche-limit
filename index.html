@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>로슈 한계 뭐시기...</title>
+  <style>
+  body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100vh; /* 전체 높이를 차지하도록 설정 */
+    background-color: #f5f5f5;
+    color: #333;
+  }
+  .selectors, .selectors > div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row; /* 요소들을 가로로 배열 */
+  }
+  .selectors {
+    flex-wrap: wrap; /* 요소들이 너무 많으면 다음 줄로 넘어감 */
+    width: 80%;
+    max-width: 600px;
+    margin-bottom: 20px;
+  }
+  select, .selectors h2 {
+    margin: 0 10px; /* 좌우 마진으로 요소들 사이의 간격 조정 */
+  }
+  select {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #aaa;
+    background-color: #fff;
+    color: #333;
+  }
+  h2 {
+    text-align: center;
+    color: #333;
+  }
+  .button-85 {
+  padding: 0.6em 2em;
+  border: none;
+  outline: none;
+  color: rgb(255, 255, 255);
+  background: #111;
+  cursor: pointer;
+  position: relative;
+  z-index: 0;
+  border-radius: 10px;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.button-85:before {
+  content: "";
+  background: linear-gradient(45deg,
+      #ff0000,
+      #ff7300,
+      #fffb00,
+      #48ff00,
+      #00ffd5,
+      #002bff,
+      #7a00ff,
+      #ff00c8,
+      #ff0000);
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  background-size: 400%;
+  z-index: -1;
+  filter: blur(5px);
+  -webkit-filter: blur(5px);
+  width: calc(100% + 4px);
+  height: calc(100% + 4px);
+  animation: glowing-button-85 20s linear infinite;
+  transition: opacity 0.3s ease-in-out;
+  border-radius: 10px;
+}
+
+@keyframes glowing-button-85 {
+  0% {
+    background-position: 0 0;
+  }
+
+  50% {
+    background-position: 400% 0;
+  }
+
+  100% {
+    background-position: 0 0;
+  }
+}
+
+.button-85:after {
+  z-index: -1;
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: #222;
+  left: 0;
+  top: 0;
+  border-radius: 10px;
+}  
+  #distance {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #e6e6e6;
+    border-radius: 5px;
+    color: #333;
+    font-size: 16px;
+    text-align: center;
+    width: 80%;
+    max-width: 600px;.
+  }
+</style>
+  
+    <script>
+    // 전역 변수 선언
+    var strongDensity;
+    var weakDensity;
+    var sm;
+
+    function getStrongSelect() {
+      var select = document.getElementById('strong');
+      var strongOption = select.options[select.selectedIndex];
+      strongJudge(strongOption);
+    }
+
+    function getWeakSelect() {
+      var select = document.getElementById('weak');
+      var weakOption = select.options[select.selectedIndex];
+      weakJudge(weakOption);
+    }
+
+    function strongJudge(strongOption) {
+      if (strongOption.value === "custom") {
+        var sd = prompt("강한 천체의 밀도를 입력해주세요.(단위 : kg/m³)")
+        strongDensity = Number(sd);
+        var d = prompt("강한 천체의 적도반지름을 입력해주세요.(단위 : m)")
+        sm = Number(d);
+      } else if (strongOption.value === "Sun") {
+        strongDensity = 1408;
+        sm = 696000000;
+      } else if (strongOption.value === "Earth") {
+        strongDensity = 5513;
+        sm = 6378137;
+      } else if (strongOption.value === "Moon") {
+        strongDensity = 3346;
+        sm = 1737100;
+      } else if (strongOption.value === "Mars") {
+        strongDensity = 3933;
+        sm = 3389500;
+      } else if (strongOption.value === "Jupiter") {
+        strongDensity = 1326;
+        sm = 71493000;
+      }
+    }
+
+    function weakJudge(weakOption) {
+      if (weakOption.value === "custom") {
+          var wd = prompt("약한 천체의 밀도를 입력해주세요.(단위 : kg/m³)")
+          weakDensity = Number(wd);
+      } else if (weakOption.value === "Sun") {
+        weakDensity = 1408;
+      } else if (weakOption.value === "Earth") {
+        weakDensity = 5513;
+      } else if (weakOption.value === "Moon") {
+        weakDensity = 3346;
+      } else if (weakOption.value === "Mars") {
+        weakDensity = 3930;
+      } else if (weakOption.value === "Jupiter") {
+        weakDensity = 1326;
+      }
+    }
+
+function calculate() {
+    var strongSelect = document.getElementById('strong');
+    var weakSelect = document.getElementById('weak');
+    var fr = document.getElementById('sl');
+  
+    var constant = (fr.value === "fluid") ? 2.44 : 1.26;
+  
+    if (strongSelect.value === "none" || weakSelect.value === "none") {
+      alert("올바른 값을 선택 또는 입력해주세요.");
+    } else {
+      // 계산 수행
+      var roshu = (constant * sm * (strongDensity / weakDensity) ** (1 / 3)) * 0.001; // km 단위로 변환
+      var resultText;
+      if (roshu <= sm * 0.001) { // sm도 km 단위로 변환하여 비교
+        resultText = "로슈 한계가 강한 천체의 반지름 안에 있습니다 :(";
+      } else {
+        resultText = "두 천체간의 로슈 한계는 약 " + roshu.toFixed(2) + "km입니다.";
+      }
+      document.getElementById("distance").innerText = resultText;
+    }
+  }
+
+  </script>
+  
+  </head>
+
+<body>
+  <div class="selectors">
+    <div>
+      <h2>강한 천체</h2>
+      <select id="strong" onchange="getStrongSelect()">
+        <option value="none">===선택===</option>
+        <option value="custom">사용자 정의</option>
+        <option value="Sun">태양</option>
+        <option value="Earth">지구</option>
+        <option value="Moon">달</option>
+        <option value="Mars">화성</option>
+        <option value="Jupiter">목성</option>
+      </select>
+    </div>
+    <div>
+      <h2>약한 천체</h2>
+      <select id="weak" onchange="getWeakSelect()">
+        <option value="none">===선택===</option>
+        <option value="custom">사용자 정의</option>
+        <option value="Sun">태양</option>
+        <option value="Earth">지구</option>
+        <option value="Moon">달</option>
+        <option value="Mars">화성</option>
+        <option value="Jupiter">목성</option>
+      </select>
+    </div>
+    <div>
+      <h4>위성이 강체인가요?? 유체인가요????</h4>
+      <select id="sl">
+        <option value="fluid">유체</option>
+        <option value="rigid">강체</option>
+      </select>
+    </div>
+  </div>
+
+  <div>
+    <button class="button-85" role="button" onclick="calculate()">계산</button>
+  </div>
+  
+  <div id="distance">
+    
+  </div>
+</body>
+
+</html>
